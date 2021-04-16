@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GeneralDTO {
-    private long id;
-    private String nombre;
+public class StatusCodeDTO {
+    private int code;
+    private String message;
 }

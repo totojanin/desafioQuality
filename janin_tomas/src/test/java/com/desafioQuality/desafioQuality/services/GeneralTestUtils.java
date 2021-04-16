@@ -1,82 +1,70 @@
 package com.desafioQuality.desafioQuality.services;
 
-import com.desafioQuality.desafioQuality.dtos.GeneralDTO;
+import com.desafioQuality.desafioQuality.controllers.FlightController;
+import com.desafioQuality.desafioQuality.dtos.FlightDTO;
+import com.desafioQuality.desafioQuality.dtos.HotelDTO;
 import com.opencsv.CSVReader;
 import org.springframework.util.ResourceUtils;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class GeneralTestUtils {
-    public static List<GeneralDTO> getArticulos() throws IOException {
-        return loadDataBase();
+    private static final String DATE_FORMAT = "dd/MM/yyyy";
+
+    public static List<HotelDTO> getHotels() throws ParseException {
+        List<HotelDTO> hotels = new ArrayList<HotelDTO>();
+
+        hotels.add(new HotelDTO("CH-0002", "Cataratas Hotel", "Puerto Iguazú" , "Doble" , 6300, DateUtils.parse(DATE_FORMAT, "10/02/2021"), DateUtils.parse(DATE_FORMAT, "20/03/2021"), "NO"));
+        hotels.add(new HotelDTO("CH-0003", "Cataratas Hotel 2", "Puerto Iguazú" , "Triple" , 8200, DateUtils.parse(DATE_FORMAT, "10/02/2021"), DateUtils.parse(DATE_FORMAT, "23/03/2021"), "NO"));
+        hotels.add(new HotelDTO("HB-0001", "Hotel Bristol", "Buenos Aires" , "Single" , 5435, DateUtils.parse(DATE_FORMAT, "10/02/2021"), DateUtils.parse(DATE_FORMAT, "19/03/2021"), "NO"));
+        hotels.add(new HotelDTO("CH-0002", "Hotel Bristol 2", "Buenos Aires" , "Doble" , 7200, DateUtils.parse(DATE_FORMAT, "12/02/2021"), DateUtils.parse(DATE_FORMAT, "17/04/2021"), "NO"));
+
+        return hotels;
     }
 
-    private static List<GeneralDTO> loadDataBase() throws IOException {
-        List<GeneralDTO> articulos = new ArrayList<>();
+    public static List<HotelDTO> getHotelsReserved() throws ParseException {
+        List<HotelDTO> hotels = new ArrayList<HotelDTO>();
 
-        try {
-            CSVReader reader = new CSVReader(new FileReader(ResourceUtils.getFile("classpath:dbTest.csv").getPath()), ',');
+        hotels.add(new HotelDTO("CH-0002", "Cataratas Hotel", "Puerto Iguazú" , "Doble" , 6300, DateUtils.parse(DATE_FORMAT, "10/02/2021"), DateUtils.parse(DATE_FORMAT, "20/03/2021"), "SI"));
+        hotels.add(new HotelDTO("CH-0003", "Cataratas Hotel 2", "Puerto Iguazú" , "Triple" , 8200, DateUtils.parse(DATE_FORMAT, "10/02/2021"), DateUtils.parse(DATE_FORMAT, "23/03/2021"), "SI"));
+        hotels.add(new HotelDTO("HB-0001", "Hotel Bristol", "Buenos Aires" , "Single" , 5435, DateUtils.parse(DATE_FORMAT, "10/02/2021"), DateUtils.parse(DATE_FORMAT, "19/03/2021"), "SI"));
+        hotels.add(new HotelDTO("CH-0002", "Hotel Bristol 2", "Buenos Aires" , "Doble" , 7200, DateUtils.parse(DATE_FORMAT, "12/02/2021"), DateUtils.parse(DATE_FORMAT, "17/04/2021"), "SI"));
 
-            String[] nextLine = reader.readNext();
-
-            while ((nextLine = reader.readNext()) != null) {
-                articulos.add(getRecordFromLine(nextLine));
-            }
-
-            reader.close();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return articulos;
+        return hotels;
     }
 
-    private static GeneralDTO getRecordFromLine(String[] nextLine) {
-        GeneralDTO articulo = new GeneralDTO();
+    public static List<HotelDTO> getHotelsWithFilters() throws ParseException {
+        List<HotelDTO> hotels = new ArrayList<HotelDTO>();
 
-        try {
-            List<String> lineAsList = new ArrayList<String>(Arrays.asList(nextLine));
+        hotels.add(new HotelDTO("HB-0001", "Hotel Bristol", "Buenos Aires" , "Single" , 5435, DateUtils.parse(DATE_FORMAT, "10/02/2021"), DateUtils.parse(DATE_FORMAT, "19/03/2021"), "NO"));
+        hotels.add(new HotelDTO("CH-0002", "Hotel Bristol 2", "Buenos Aires" , "Doble" , 7200, DateUtils.parse(DATE_FORMAT, "12/02/2021"), DateUtils.parse(DATE_FORMAT, "17/04/2021"), "NO"));
 
-            articulo = mapToArticuloDTO(lineAsList);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return articulo;
+        return hotels;
     }
 
-    private static GeneralDTO mapToArticuloDTO(List<String> values) {
-        long productId = Long.parseLong(values.get(0));
-        String name = values.get(1);
-        String category = values.get(2);
-        String brand = values.get(3);
-        double price = Double.parseDouble(values.get(4).replace("$", "").replace(".", ""));
-        int quantity = Integer.parseInt(values.get(5));
-        boolean freeShipping = values.get(6).equals("SI");
-        String prestige = values.get(7);
+    public static List<FlightDTO> getFlights() throws ParseException {
+        List<FlightDTO> flights = new ArrayList<FlightDTO>();
 
-        return new GeneralDTO(productId, name);
+        flights.add(new FlightDTO("BAPI-1235", "Buenos Aires", "Puerto Iguazú" , "Economy" , 6500, DateUtils.parse(DATE_FORMAT, "10/02/2021"), DateUtils.parse(DATE_FORMAT, "15/02/2021")));
+        flights.add(new FlightDTO("PIBA-1420", "Puerto Iguazú", "Bogotá" , "Business" , 43200, DateUtils.parse(DATE_FORMAT, "10/02/2021"), DateUtils.parse(DATE_FORMAT, "20/02/2021")));
+        flights.add(new FlightDTO("PIBA-1420", "Puerto Iguazú", "Bogotá" , "Economy" , 25735, DateUtils.parse(DATE_FORMAT, "10/02/2021"), DateUtils.parse(DATE_FORMAT, "21/02/2021")));
+        flights.add(new FlightDTO("BATU-5536", "Buenos Aires", "Tucumán" , "Economy" , 7320, DateUtils.parse(DATE_FORMAT, "10/02/2021"), DateUtils.parse(DATE_FORMAT, "17/02/2021")));
+
+        return flights;
     }
 
-    public static GeneralDTO getArticulo1() {
-        return new GeneralDTO(1L, "Remera");
-    }
+    public static List<FlightDTO> getFlightsWithFilters() throws ParseException {
+        List<FlightDTO> flights = new ArrayList<FlightDTO>();
 
-    public static GeneralDTO getArticulo2() {
-        return new GeneralDTO(2L, "Martillo");
-    }
+        flights.add(new FlightDTO("PIBA-1420", "Puerto Iguazú", "Bogotá" , "Business" , 43200, DateUtils.parse(DATE_FORMAT, "10/02/2021"), DateUtils.parse(DATE_FORMAT, "20/02/2021")));
+        flights.add(new FlightDTO("PIBA-1420", "Puerto Iguazú", "Bogotá" , "Economy" , 25735, DateUtils.parse(DATE_FORMAT, "10/02/2021"), DateUtils.parse(DATE_FORMAT, "21/02/2021")));
 
-    public static GeneralDTO getArticulo3() {
-        return new GeneralDTO(3L, "Notebook");
-    }
-
-    public static GeneralDTO getArticulo4() {
-        return new GeneralDTO(4L, "Moto G9");
+        return flights;
     }
 }
