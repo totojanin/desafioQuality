@@ -29,7 +29,7 @@ public class HotelServiceImpl implements HotelService {
     public List<HotelDTO> findHotelsByFilters(String dateFrom, String dateTo, String destination) throws InvalidInputException, IOException, ParseException {
         List<HotelDTO> hotels = hotelRepository.findHotels(DATE_FORMAT);
 
-        validateInput(dateFrom, dateTo, destination, hotels);
+        ValidationUtils.validateInputHotels(dateFrom, dateTo, destination, hotels);
 
         hotels = findHotelByDateFrom(hotels, dateFrom);
         hotels = findHotelByDateTo(hotels, dateTo);
@@ -39,7 +39,7 @@ public class HotelServiceImpl implements HotelService {
         return hotels;
     }
 
-    private List<HotelDTO> findHotelByDateFrom(List<HotelDTO> hotels, String dateFromStr) throws InvalidInputException, ParseException {
+    public List<HotelDTO> findHotelByDateFrom(List<HotelDTO> hotels, String dateFromStr) throws InvalidInputException, ParseException {
         LocalDate dateFrom;
 
         if (dateFromStr == null)
@@ -58,7 +58,7 @@ public class HotelServiceImpl implements HotelService {
             throw new InvalidInputException("There are no hotels with the given input");
     }
 
-    private List<HotelDTO> findHotelByDateTo(List<HotelDTO> hotels, String dateToStr) throws InvalidInputException, ParseException {
+    public List<HotelDTO> findHotelByDateTo(List<HotelDTO> hotels, String dateToStr) throws InvalidInputException, ParseException {
         LocalDate dateTo;
 
         if (dateToStr == null)
@@ -77,7 +77,7 @@ public class HotelServiceImpl implements HotelService {
             throw new InvalidInputException("There are no hotels with the given input");
     }
 
-    private List<HotelDTO> findHotelByDestination(List<HotelDTO> hotels, String destination) {
+    public List<HotelDTO> findHotelByDestination(List<HotelDTO> hotels, String destination) {
         if (destination == null)
             return hotels;
 
@@ -99,17 +99,25 @@ public class HotelServiceImpl implements HotelService {
             throw new InvalidInputException("There are no hotels available");
     }
 
-    private void validateInput(String dateFrom, String dateTo, String destination, List<HotelDTO> hotels) throws InvalidInputException, ParseException {
-        if (dateFrom != null && !DateUtils.isValid(DATE_FORMAT, dateFrom))
-            throw new InvalidInputException("The Date From format must be dd/mm/aaaa");
+    public List<HotelDTO> findHotelByHotelCode(List<HotelDTO> hotels, String hotelCode) {
+        if (hotelCode == null)
+            return hotels;
 
-        if (dateTo != null && !DateUtils.isValid(DATE_FORMAT, dateTo))
-            throw new InvalidInputException("The Date To format must be dd/mm/aaaa");
+        List<HotelDTO> response = hotels.stream()
+                .filter(h -> h.getHotelCode().equalsIgnoreCase(hotelCode))
+                .collect(Collectors.toList());
 
-        if (dateFrom != null && dateTo != null && DateUtils.parse(DATE_FORMAT, dateFrom).toEpochDay() > DateUtils.parse(DATE_FORMAT, dateTo).toEpochDay())
-            throw new InvalidInputException("Date From must be older than Date To");
+        return response;
+    }
 
-        if (destination != null && !hotels.stream().anyMatch(h -> h.getDestination().equalsIgnoreCase(destination)))
-            throw new InvalidInputException("The chosen destination does not exist");
+    public List<HotelDTO> findHotelByRoomType(List<HotelDTO> hotels, String roomType) {
+        if (roomType == null)
+            return hotels;
+
+        List<HotelDTO> response = hotels.stream()
+                .filter(h -> h.getRoomType().equalsIgnoreCase(roomType))
+                .collect(Collectors.toList());
+
+        return response;
     }
 }

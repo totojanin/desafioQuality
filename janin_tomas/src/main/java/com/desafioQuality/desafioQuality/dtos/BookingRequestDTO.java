@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class BookingRequestDTO {
-    private String username;
+    private String userName;
     private BookingDTO booking;
 }

@@ -25,7 +25,7 @@ public class FlightServiceImpl implements FlightService {
     public List<FlightDTO> findFlightsByFilters(String dateFrom, String dateTo, String origin, String destination) throws InvalidInputException, IOException, ParseException {
         List<FlightDTO> flights = flightRepository.findFlights(DATE_FORMAT);
 
-        validateInput(dateFrom, dateTo, origin, destination, flights);
+        ValidationUtils.validateInputFlights(dateFrom, dateTo, origin, destination, flights);
 
         flights = findFlightByDateFrom(flights, dateFrom);
         flights = findFlightByDateTo(flights, dateTo);
@@ -93,22 +93,5 @@ public class FlightServiceImpl implements FlightService {
                 .collect(Collectors.toList());
 
         return response;
-    }
-
-    private void validateInput(String dateFrom, String dateTo, String origin, String destination, List<FlightDTO> flights) throws InvalidInputException, ParseException {
-        if (dateFrom != null && !DateUtils.isValid(DATE_FORMAT, dateFrom))
-            throw new InvalidInputException("The Date From format must be dd/mm/aaaa");
-
-        if (dateTo != null && !DateUtils.isValid(DATE_FORMAT, dateTo))
-            throw new InvalidInputException("The Date To format must be dd/mm/aaaa");
-
-        if (dateFrom != null && dateTo != null && DateUtils.parse(DATE_FORMAT, dateFrom).toEpochDay() > DateUtils.parse(DATE_FORMAT, dateTo).toEpochDay())
-            throw new InvalidInputException("Date From must be older than Date To");
-
-        if (origin != null && !flights.stream().anyMatch(h -> h.getOrigin().equalsIgnoreCase(origin)))
-            throw new InvalidInputException("The chosen origin does not exist");
-
-        if (destination != null && !flights.stream().anyMatch(h -> h.getDestination().equalsIgnoreCase(destination)))
-            throw new InvalidInputException("The chosen destination does not exist");
     }
 }

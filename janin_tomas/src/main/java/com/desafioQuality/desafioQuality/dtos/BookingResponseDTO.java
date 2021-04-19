@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class BookingResponseDTO {
-    private String username;
+    private String userName;
     private double amount;
     private double interest;
     private double total;

@@ -4,6 +4,7 @@ import com.desafioQuality.desafioQuality.controllers.HotelController;
 import com.desafioQuality.desafioQuality.dtos.ErrorDTO;
 import com.desafioQuality.desafioQuality.dtos.HotelDTO;
 import com.desafioQuality.desafioQuality.exceptions.InvalidInputException;
+import com.desafioQuality.desafioQuality.services.BookingService;
 import com.desafioQuality.desafioQuality.services.HotelService;
 import com.desafioQuality.desafioQuality.services.GeneralTestUtils;
 
@@ -26,11 +27,14 @@ public class HotelControllerTest {
     @MockBean
     private HotelService hotelService;
 
+    @MockBean
+    private BookingService bookingService;
+
     private HotelController hotelController;
 
     @BeforeEach
     void setUp() {
-        hotelController = new HotelController(hotelService);
+        hotelController = new HotelController(hotelService, bookingService);
     }
 
     @Test

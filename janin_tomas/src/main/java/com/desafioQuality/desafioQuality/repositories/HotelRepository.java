@@ -1,5 +1,6 @@
 package com.desafioQuality.desafioQuality.repositories;
 
+import com.desafioQuality.desafioQuality.dtos.BookingRequestDTO;
 import com.desafioQuality.desafioQuality.dtos.HotelDTO;
 
 import java.io.IOException;

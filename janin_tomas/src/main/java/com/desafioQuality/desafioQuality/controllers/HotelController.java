@@ -22,7 +22,7 @@ public class HotelController {
 
     private BookingService bookingService;
 
-    public HotelController(HotelService hotelService) {
+    public HotelController(HotelService hotelService, BookingService bookingService) {
         this.hotelService = hotelService;
         this.bookingService = bookingService;
     }

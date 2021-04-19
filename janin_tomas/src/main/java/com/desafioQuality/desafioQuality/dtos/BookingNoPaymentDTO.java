@@ -10,7 +10,7 @@ public class BookingNoPaymentDTO {
     private String dateTo;
     private String destination;
     private String hotelCode;
-    private int peopleAmount;
+    private String peopleAmount;
     private String roomType;
-    private List<PeopleDTO> people;
+    private List<PersonDTO> people;
 }

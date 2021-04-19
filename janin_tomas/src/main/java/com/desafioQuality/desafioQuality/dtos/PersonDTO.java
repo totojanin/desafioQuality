@@ -3,7 +3,7 @@ package com.desafioQuality.desafioQuality.dtos;
 import lombok.Data;
 
 @Data
-public class PeopleDTO {
+public class PersonDTO {
     private String dni;
     private String name;
     private String lastname;
