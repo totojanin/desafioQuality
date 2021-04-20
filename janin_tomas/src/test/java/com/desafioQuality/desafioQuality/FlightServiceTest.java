@@ -1,8 +1,10 @@
 package com.desafioQuality.desafioQuality;
 
 import com.desafioQuality.desafioQuality.dtos.FlightDTO;
+import com.desafioQuality.desafioQuality.dtos.HotelDTO;
 import com.desafioQuality.desafioQuality.exceptions.InvalidInputException;
 import com.desafioQuality.desafioQuality.repositories.FlightRepository;
+import com.desafioQuality.desafioQuality.services.DateUtils;
 import com.desafioQuality.desafioQuality.services.FlightService;
 import com.desafioQuality.desafioQuality.services.FlightServiceImpl;
 import com.desafioQuality.desafioQuality.services.GeneralTestUtils;
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -54,6 +57,38 @@ public class FlightServiceTest {
         List<FlightDTO> responseFlights = flightService.findFlightsByFilters("12/02/2021", "18/02/2021", "Puerto Iguazú", "Bogotá");
 
         Assertions.assertEquals(flightsFiltered, responseFlights);
+    }
+
+    @Test
+    @DisplayName("Gets the flight with the specified number")
+    public void getFlightByNumber() throws Exception {
+        List<FlightDTO> flights = GeneralTestUtils.getFlights();
+
+        List<FlightDTO> flightsFiltered = new ArrayList<>();
+
+        flightsFiltered.add(new FlightDTO("BAPI-1235", "Buenos Aires", "Puerto Iguazú" , "Economy" , 6500, DateUtils.parse("dd/MM/yyyy", "10/02/2021"), DateUtils.parse("dd/MM/yyyy", "15/02/2021")));
+
+        when(flightRepository.findFlights(any())).thenReturn(flights);
+
+        List<FlightDTO> responseHotels = flightService.findFlightByFlightNumber(flights, "BAPI-1235");
+
+        Assertions.assertEquals(flightsFiltered, responseHotels);
+    }
+
+    @Test
+    @DisplayName("Gets the flight with the specified seat type")
+    public void getFlightBySeatType() throws Exception {
+        List<FlightDTO> flights = GeneralTestUtils.getFlights();
+
+        List<FlightDTO> flightsFiltered = new ArrayList<>();
+
+        flightsFiltered.add(new FlightDTO("BAPI-1235", "Buenos Aires", "Puerto Iguazú" , "Economy" , 6500, DateUtils.parse("dd/MM/yyyy", "10/02/2021"), DateUtils.parse("dd/MM/yyyy", "15/02/2021")));
+
+        when(flightRepository.findFlights(any())).thenReturn(flights);
+
+        List<FlightDTO> responseHotels = flightService.findFlightBySeatType(flights, "Economy");
+
+        Assertions.assertEquals(flightsFiltered.get(0), responseHotels.get(0));
     }
 
     @Test

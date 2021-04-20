@@ -1,10 +1,9 @@
 package com.desafioQuality.desafioQuality;
 
 import com.desafioQuality.desafioQuality.controllers.HotelController;
-import com.desafioQuality.desafioQuality.dtos.ErrorDTO;
-import com.desafioQuality.desafioQuality.dtos.HotelDTO;
+import com.desafioQuality.desafioQuality.dtos.*;
 import com.desafioQuality.desafioQuality.exceptions.InvalidInputException;
-import com.desafioQuality.desafioQuality.services.BookingService;
+import com.desafioQuality.desafioQuality.services.BookingHotelService;
 import com.desafioQuality.desafioQuality.services.HotelService;
 import com.desafioQuality.desafioQuality.services.GeneralTestUtils;
 
@@ -17,6 +16,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -28,7 +29,7 @@ public class HotelControllerTest {
     private HotelService hotelService;
 
     @MockBean
-    private BookingService bookingService;
+    private BookingHotelService bookingService;
 
     private HotelController hotelController;
 
@@ -67,6 +68,34 @@ public class HotelControllerTest {
         when(hotelService.findHotelsByFilters(any(), any(), any())).thenThrow(new InvalidInputException("There are no hotels with the given input"));
 
         ResponseEntity thrown = hotelController.hotels("25/40/2021", "25/02/21", "Buenos Aires");
+
+        ErrorDTO error = (ErrorDTO) thrown.getBody();
+
+        Assertions.assertTrue(error.getName().contains("Invalid Input"));
+        Assertions.assertTrue(error.getDescription().contains("There are no hotels with the given input"));
+    }
+
+    @Test
+    @DisplayName("Sends a booking and reserve")
+    public void reserveBooking() throws InvalidInputException, IOException, ParseException {
+        BookingHotelRequestDTO bookingRequest = GeneralTestUtils.getHotelBookingRequest(6);
+        BookingHotelResponseDTO bookingResponse = GeneralTestUtils.getHotelBookingResponse6Dues();
+
+        when(bookingService.reserve(any())).thenReturn(bookingResponse);
+
+        ResponseEntity<BookingHotelResponseDTO> responseBooking = hotelController.booking(bookingRequest);
+
+        Assertions.assertEquals(bookingResponse, responseBooking.getBody());
+    }
+
+    @Test
+    @DisplayName("Gets an exception from an incorrect DateFrom")
+    public void getBookingDateFromException() throws Exception {
+        BookingHotelRequestDTO bookingRequest = GeneralTestUtils.getHotelBookingRequest(6 );
+
+        when(bookingService.reserve(any())).thenThrow(new InvalidInputException("There are no hotels with the given input"));
+
+        ResponseEntity thrown = hotelController.booking(bookingRequest);
 
         ErrorDTO error = (ErrorDTO) thrown.getBody();
 

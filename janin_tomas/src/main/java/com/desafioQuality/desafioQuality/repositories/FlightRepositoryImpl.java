@@ -18,7 +18,7 @@ import java.util.List;
 @Repository
 public class FlightRepositoryImpl implements FlightRepository {
     @Override
-    public List<FlightDTO> findFlights(String dateFormat) throws IOException {
+    public List<FlightDTO> findFlights(String dateFormat) throws IOException, ParseException {
         return DataBaseUtils.loadFlightDataBase(dateFormat);
     }
 }

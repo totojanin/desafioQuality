@@ -35,7 +35,7 @@ public class FlightServiceImpl implements FlightService {
         return flights;
     }
 
-    private List<FlightDTO> findFlightByDateFrom(List<FlightDTO> flights, String dateFromStr) throws InvalidInputException, ParseException {
+    public List<FlightDTO> findFlightByDateFrom(List<FlightDTO> flights, String dateFromStr) throws InvalidInputException, ParseException {
         LocalDate dateFrom;
 
         if (dateFromStr == null)
@@ -54,7 +54,7 @@ public class FlightServiceImpl implements FlightService {
             throw new InvalidInputException("There are no flights with the given input");
     }
 
-    private List<FlightDTO> findFlightByDateTo(List<FlightDTO> flights, String dateToStr) throws InvalidInputException, ParseException {
+    public List<FlightDTO> findFlightByDateTo(List<FlightDTO> flights, String dateToStr) throws InvalidInputException, ParseException {
         LocalDate dateTo;
 
         if (dateToStr == null)
@@ -73,7 +73,7 @@ public class FlightServiceImpl implements FlightService {
             throw new InvalidInputException("There are no flights with the given input");
     }
 
-    private List<FlightDTO> findFlightByOrigin(List<FlightDTO> flights, String origin) {
+    public List<FlightDTO> findFlightByOrigin(List<FlightDTO> flights, String origin) {
         if (origin == null)
             return flights;
 
@@ -84,12 +84,34 @@ public class FlightServiceImpl implements FlightService {
         return response;
     }
 
-    private List<FlightDTO> findFlightByDestination(List<FlightDTO> flights, String destination) {
+    public List<FlightDTO> findFlightByDestination(List<FlightDTO> flights, String destination) {
         if (destination == null)
             return flights;
 
         List<FlightDTO> response = flights.stream()
                 .filter(h -> h.getDestination().equalsIgnoreCase(destination))
+                .collect(Collectors.toList());
+
+        return response;
+    }
+
+    public List<FlightDTO> findFlightByFlightNumber(List<FlightDTO> flights, String flightNumber) {
+        if (flightNumber == null)
+            return flights;
+
+        List<FlightDTO> response = flights.stream()
+                .filter(h -> h.getFlightNumber().equalsIgnoreCase(flightNumber))
+                .collect(Collectors.toList());
+
+        return response;
+    }
+
+    public List<FlightDTO> findFlightBySeatType(List<FlightDTO> flights, String seatType) {
+        if (seatType == null)
+            return flights;
+
+        List<FlightDTO> response = flights.stream()
+                .filter(h -> h.getSeatType().equalsIgnoreCase(seatType))
                 .collect(Collectors.toList());
 
         return response;

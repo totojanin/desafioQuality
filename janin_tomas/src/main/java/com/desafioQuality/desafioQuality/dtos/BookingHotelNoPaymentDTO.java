@@ -1,11 +1,15 @@
 package com.desafioQuality.desafioQuality.dtos;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
-public class BookingNoPaymentDTO {
+@AllArgsConstructor
+@NoArgsConstructor
+public class BookingHotelNoPaymentDTO {
     private String dateFrom;
     private String dateTo;
     private String destination;

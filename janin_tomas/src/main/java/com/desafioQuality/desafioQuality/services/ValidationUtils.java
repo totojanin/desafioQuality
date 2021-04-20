@@ -26,7 +26,7 @@ public class ValidationUtils {
         validateFlightDestination(destination, flights);
     }
 
-    public static void validateInputBookingHotel(BookingRequestDTO bookingRequest, List<HotelDTO> hotels) throws InvalidInputException, ParseException {
+    public static void validateInputBookingHotel(BookingHotelRequestDTO bookingRequest, List<HotelDTO> hotels) throws InvalidInputException, ParseException {
         validateDates(bookingRequest.getBooking().getDateFrom(), bookingRequest.getBooking().getDateTo());
 
         validateHotelDestination(bookingRequest.getBooking().getDestination(), hotels);
@@ -38,6 +38,22 @@ public class ValidationUtils {
         validateEmail(bookingRequest.getUserName(), bookingRequest.getBooking().getPeople());
 
         validatePaymentMethod(bookingRequest.getBooking().getPaymentMethod());
+    }
+
+    public static void validateInputBookingFlight(BookingFlightRequestDTO bookingRequest, List<FlightDTO> flights) throws InvalidInputException, ParseException {
+        validateDates(bookingRequest.getFlightReservation().getDateFrom(), bookingRequest.getFlightReservation().getDateTo());
+
+        validateFlightOrigin(bookingRequest.getFlightReservation().getOrigin(), flights);
+
+        validateFlightDestination(bookingRequest.getFlightReservation().getDestination(), flights);
+
+        validateSeats(bookingRequest.getFlightReservation().getSeats());
+
+        validateSeatType(bookingRequest.getFlightReservation().getSeatType());
+
+        validateEmail(bookingRequest.getUserName(), bookingRequest.getFlightReservation().getPeople());
+
+        validatePaymentMethod(bookingRequest.getFlightReservation().getPaymentMethod());
     }
 
     private static void validateDates(String dateFrom, String dateTo) throws InvalidInputException, ParseException {
@@ -74,6 +90,14 @@ public class ValidationUtils {
             throw new InvalidInputException("The maximum amount of people allowed is 10");
     }
 
+    private static void validateSeats(String seats) throws InvalidInputException {
+        if (!isNumeric(seats))
+            throw new InvalidInputException("The amount of seats must be a numeric value");
+
+        if (Integer.parseInt(seats) > 4)
+            throw new InvalidInputException("The maximum amount of seats allowed is 4");
+    }
+
     private static void validateRoomType(String roomType, String peopleAmount) throws InvalidInputException {
         switch (roomType) {
             case "Single":
@@ -99,6 +123,11 @@ public class ValidationUtils {
             default:
                 throw new InvalidInputException("The selected room type does not exist");
         }
+    }
+
+    private static void validateSeatType(String seatType) throws InvalidInputException {
+        if (!seatType.equalsIgnoreCase("Economy") && !seatType.equalsIgnoreCase("Business"))
+            throw new InvalidInputException("The selected seat type does not exist");
     }
 
     private static void validateEmail(String email, List<PersonDTO> people) throws InvalidInputException {

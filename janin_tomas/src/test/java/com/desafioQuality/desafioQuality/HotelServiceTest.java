@@ -3,6 +3,7 @@ package com.desafioQuality.desafioQuality;
 import com.desafioQuality.desafioQuality.dtos.HotelDTO;
 import com.desafioQuality.desafioQuality.exceptions.InvalidInputException;
 import com.desafioQuality.desafioQuality.repositories.HotelRepository;
+import com.desafioQuality.desafioQuality.services.DateUtils;
 import com.desafioQuality.desafioQuality.services.HotelService;
 import com.desafioQuality.desafioQuality.services.GeneralTestUtils;
 
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -53,6 +55,38 @@ public class HotelServiceTest {
         when(hotelRepository.findHotels(any())).thenReturn(hotels);
 
         List<HotelDTO> responseHotels = hotelService.findHotelsByFilters("12/02/2021", "25/02/2021", "Buenos Aires");
+
+        Assertions.assertEquals(hotelsFiltered, responseHotels);
+    }
+
+    @Test
+    @DisplayName("Gets the hotel with the specified code")
+    public void getHotelByCode() throws Exception {
+        List<HotelDTO> hotels = GeneralTestUtils.getHotels();
+
+        List<HotelDTO> hotelsFiltered = new ArrayList<>();
+
+        hotelsFiltered.add(new HotelDTO("HB-0001", "Hotel Bristol", "Buenos Aires" , "Single" , 5435, DateUtils.parse("dd/MM/yyyy", "10/02/2021"), DateUtils.parse("dd/MM/yyyy", "19/03/2021"), "NO"));
+
+        when(hotelRepository.findHotels(any())).thenReturn(hotels);
+
+        List<HotelDTO> responseHotels = hotelService.findHotelByHotelCode(hotels, "HB-0001");
+
+        Assertions.assertEquals(hotelsFiltered, responseHotels);
+    }
+
+    @Test
+    @DisplayName("Gets the hotel with the specified room type")
+    public void getHotelByRoomType() throws Exception {
+        List<HotelDTO> hotels = GeneralTestUtils.getHotels();
+
+        List<HotelDTO> hotelsFiltered = new ArrayList<>();
+
+        hotelsFiltered.add(new HotelDTO("CH-0003", "Cataratas Hotel 2", "Puerto Iguazú" , "Triple" , 8200, DateUtils.parse("dd/MM/yyyy", "10/02/2021"), DateUtils.parse("dd/MM/yyyy", "23/03/2021"), "NO"));
+
+        when(hotelRepository.findHotels(any())).thenReturn(hotels);
+
+        List<HotelDTO> responseHotels = hotelService.findHotelByRoomType(hotels, "Triple");
 
         Assertions.assertEquals(hotelsFiltered, responseHotels);
     }

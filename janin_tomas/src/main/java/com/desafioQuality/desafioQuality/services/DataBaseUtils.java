@@ -14,23 +14,18 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DataBaseUtils {
-    public static List<HotelDTO> loadHotelDataBase(String dateFormat) {
+    public static List<HotelDTO> loadHotelDataBase(String dateFormat) throws IOException, ParseException {
         List<HotelDTO> db = new ArrayList<>();
 
-        try {
-            CSVReader reader = new CSVReader(new FileReader(ResourceUtils.getFile("classpath:dbHotels.csv").getPath()), ',');
+        CSVReader reader = new CSVReader(new FileReader(ResourceUtils.getFile("classpath:dbHotels.csv").getPath()), ',');
 
-            String[] nextLine = reader.readNext();
+        String[] nextLine = reader.readNext();
 
-            while ((nextLine = reader.readNext()) != null) {
-                db.add(getHotelRecordFromLine(nextLine, dateFormat));
-            }
-
-            reader.close();
+        while ((nextLine = reader.readNext()) != null) {
+            db.add(getHotelRecordFromLine(nextLine, dateFormat));
         }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        reader.close();
 
         List<HotelDTO> hotels = new ArrayList<>();
 
@@ -41,17 +36,12 @@ public class DataBaseUtils {
         return hotels;
     }
 
-    private static HotelDTO getHotelRecordFromLine(String[] nextLine, String dateFormat) {
+    private static HotelDTO getHotelRecordFromLine(String[] nextLine, String dateFormat) throws ParseException {
         HotelDTO hotel = new HotelDTO();
 
-        try {
-            List<String> lineAsList = new ArrayList<String>(Arrays.asList(nextLine));
+        List<String> lineAsList = new ArrayList<String>(Arrays.asList(nextLine));
 
-            hotel = mapToHotelDTO(lineAsList, dateFormat);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        hotel = mapToHotelDTO(lineAsList, dateFormat);
 
         return hotel;
     }
@@ -91,10 +81,7 @@ public class DataBaseUtils {
                 row++;
             }
         }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        catch (IOException e) {
+        catch (IOException | ParseException e) {
             e.printStackTrace();
         }
 
@@ -118,39 +105,46 @@ public class DataBaseUtils {
         writer.close();
     }
 
+    public static void resetReservation() throws IOException {
 
-    public static List<FlightDTO> loadFlightDataBase(String dateFormat) throws IOException {
+        File inputFile = new File(ResourceUtils.getFile("classpath:dbHotels.csv").getPath());
+
+        CSVReader reader = new CSVReader(new FileReader(inputFile), ',');
+        List<String[]> csvBody = reader.readAll();
+
+        csvBody.get(7)[7] = "NO";
+        reader.close();
+
+        CSVWriter writer = new CSVWriter(new FileWriter(inputFile), ',');
+
+        writer.writeAll(csvBody);
+        writer.flush();
+        writer.close();
+    }
+
+
+    public static List<FlightDTO> loadFlightDataBase(String dateFormat) throws IOException, ParseException {
         List<FlightDTO> flights = new ArrayList<>();
 
-        try {
-            CSVReader reader = new CSVReader(new FileReader(ResourceUtils.getFile("classpath:dbFlights.csv").getPath()), ',');
+        CSVReader reader = new CSVReader(new FileReader(ResourceUtils.getFile("classpath:dbFlights.csv").getPath()), ',');
 
-            String[] nextLine = reader.readNext();
+        String[] nextLine = reader.readNext();
 
-            while ((nextLine = reader.readNext()) != null) {
-                flights.add(getFlightRecordFromLine(nextLine, dateFormat));
-            }
-
-            reader.close();
+        while ((nextLine = reader.readNext()) != null) {
+            flights.add(getFlightRecordFromLine(nextLine, dateFormat));
         }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        reader.close();
 
         return flights;
     }
 
-    private static FlightDTO getFlightRecordFromLine(String[] nextLine, String dateFormat) {
+    private static FlightDTO getFlightRecordFromLine(String[] nextLine, String dateFormat) throws ParseException {
         FlightDTO flight = new FlightDTO();
 
-        try {
-            List<String> lineAsList = new ArrayList<String>(Arrays.asList(nextLine));
+        List<String> lineAsList = new ArrayList<String>(Arrays.asList(nextLine));
 
-            flight = mapToFlightDTO(lineAsList, dateFormat);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        flight = mapToFlightDTO(lineAsList, dateFormat);
 
         return flight;
     }

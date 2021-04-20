@@ -1,7 +1,7 @@
 package com.desafioQuality.desafioQuality.services;
 
-import com.desafioQuality.desafioQuality.dtos.BookingRequestDTO;
-import com.desafioQuality.desafioQuality.dtos.BookingResponseDTO;
+import com.desafioQuality.desafioQuality.dtos.BookingHotelRequestDTO;
+import com.desafioQuality.desafioQuality.dtos.BookingHotelResponseDTO;
 import com.desafioQuality.desafioQuality.dtos.HotelDTO;
 import com.desafioQuality.desafioQuality.dtos.StatusCodeDTO;
 import com.desafioQuality.desafioQuality.exceptions.InvalidInputException;
@@ -13,26 +13,26 @@ import java.text.ParseException;
 import java.util.List;
 
 @Service
-public class BookingServiceImpl implements BookingService {
+public class BookingHotelServiceImpl implements BookingHotelService {
     private final String DATE_FORMAT = "dd/MM/yyyy";
 
     private HotelService hotelService;
 
     private HotelRepository hotelRepository;
 
-    public BookingServiceImpl(HotelService hotelService, HotelRepository hotelRepository) {
+    public BookingHotelServiceImpl(HotelService hotelService, HotelRepository hotelRepository) {
         this.hotelService = hotelService;
         this.hotelRepository = hotelRepository;
     }
 
     @Override
-    public BookingResponseDTO reserve(BookingRequestDTO bookingRequest) throws InvalidInputException, IOException, ParseException {
+    public BookingHotelResponseDTO reserve(BookingHotelRequestDTO bookingRequest) throws IOException, ParseException {
         try {
             List<HotelDTO> hotels = hotelRepository.findHotels(DATE_FORMAT);
 
             ValidationUtils.validateInputBookingHotel(bookingRequest, hotels);
 
-            BookingResponseDTO bookingResponse = new BookingResponseDTO();
+            BookingHotelResponseDTO bookingResponse = new BookingHotelResponseDTO();
 
             bookingResponse.setUserName(bookingRequest.getUserName());
             bookingResponse.setBooking(bookingRequest.getBooking());
@@ -47,7 +47,7 @@ public class BookingServiceImpl implements BookingService {
 
             bookingResponse.setInterest(interest);
 
-            double total = pricePerNight * (1 + interest / 100);
+            double total = round(pricePerNight * (1 + interest / 100), 1);
 
             bookingResponse.setTotal(total);
 
@@ -60,7 +60,7 @@ public class BookingServiceImpl implements BookingService {
             return bookingResponse;
         }
         catch (InvalidInputException e) {
-            BookingResponseDTO bookingResponse = new BookingResponseDTO();
+            BookingHotelResponseDTO bookingResponse = new BookingHotelResponseDTO();
 
             StatusCodeDTO statusCode = new StatusCodeDTO(400, e.getMessage());
 
@@ -70,7 +70,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private HotelDTO findHotelByBookingFilters(BookingRequestDTO bookingRequest, List<HotelDTO> hotels) throws InvalidInputException, IOException, ParseException {
+    private HotelDTO findHotelByBookingFilters(BookingHotelRequestDTO bookingRequest, List<HotelDTO> hotels) throws InvalidInputException, IOException, ParseException {
         hotels = hotelService.findHotelByDateFrom(hotels, bookingRequest.getBooking().getDateFrom());
         hotels = hotelService.findHotelByDateTo(hotels, bookingRequest.getBooking().getDateTo());
         hotels = hotelService.findHotelByDestination(hotels, bookingRequest.getBooking().getDestination());
@@ -89,7 +89,7 @@ public class BookingServiceImpl implements BookingService {
             throw new InvalidInputException("There are no hotels with the given input");
     }
 
-    private double getInterest(BookingRequestDTO bookingRequest) throws InvalidInputException {
+    private double getInterest(BookingHotelRequestDTO bookingRequest) throws InvalidInputException {
         switch (bookingRequest.getBooking().getPaymentMethod().getDues()) {
             case 1:
                 return 0;
@@ -106,5 +106,10 @@ public class BookingServiceImpl implements BookingService {
             default:
                 throw new InvalidInputException("The amount of dues can go from 1 to 6");
         }
+    }
+
+    private static double round (double value, int precision) {
+        int scale = (int) Math.pow(10, precision);
+        return (double) Math.round(value * scale) / scale;
     }
 }

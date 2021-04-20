@@ -1,11 +1,9 @@
 package com.desafioQuality.desafioQuality.controllers;
 
-import com.desafioQuality.desafioQuality.dtos.ErrorDTO;
-import com.desafioQuality.desafioQuality.dtos.FlightDTO;
-import com.desafioQuality.desafioQuality.dtos.HotelDTO;
+import com.desafioQuality.desafioQuality.dtos.*;
 import com.desafioQuality.desafioQuality.exceptions.InvalidInputException;
+import com.desafioQuality.desafioQuality.services.BookingFlightService;
 import com.desafioQuality.desafioQuality.services.FlightService;
-import com.desafioQuality.desafioQuality.services.HotelService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +17,11 @@ import java.util.List;
 public class FlightController {
     private FlightService flightService;
 
-    public FlightController(FlightService flightService) {
+    private BookingFlightService bookingService;
+
+    public FlightController(FlightService flightService, BookingFlightService bookingService) {
         this.flightService = flightService;
+        this.bookingService = bookingService;
     }
 
     @GetMapping("/flights")
@@ -39,12 +40,17 @@ public class FlightController {
         }
     }
 
-//    @PostMapping("/purchase-request")
-//    public ResponseEntity<HotelDTO> purchaseRequest(@RequestBody HotelDTO purchaseRequest) throws InvalidInputException {
-//        HotelDTO purchaseResponse = hotelService.calculatePurchase();
-//
-//        return new ResponseEntity<>(purchaseResponse, HttpStatus.OK);
-//    }
+    @PostMapping("/flight-reservation")
+    public ResponseEntity<BookingFlightResponseDTO> flightReservation(@RequestBody BookingFlightRequestDTO bookingRequest) throws InvalidInputException, IOException, ParseException {
+        try {
+            BookingFlightResponseDTO bookingResponse = bookingService.reserve(bookingRequest);
+
+            return new ResponseEntity<>(bookingResponse, HttpStatus.OK);
+        }
+        catch (InvalidInputException e) {
+            return exceptionHandler(e);
+        }
+    }
 
     @ExceptionHandler(InvalidInputException.class)
     public ResponseEntity exceptionHandler(InvalidInputException e) {
